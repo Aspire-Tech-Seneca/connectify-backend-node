@@ -35,7 +35,6 @@ let userSockets = {}; // Map users to socket IDs
 async function getMatchedUsers(token) {
     try {
         const response = await axios.get(`${BASE_URL}/get-mymatchup-list/`, {
-            // headers: { Authorization: `Bearer ${token}` }
             headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQxOTc4MTk0LCJpYXQiOjE3NDE5Nzc4OTQsImp0aSI6IjYxYTVlMzhmOGY3ODRiYzE4MmExNTI0NzU5YjIyNDhjIiwidXNlcl9pZCI6MjV9.TxTz937y7XNW9s55DT8sbVmxAOIlHu9QA1Og7X4yk_k` }
         });
         return response.data;
@@ -52,22 +51,18 @@ io.on('connection', (socket) => {
     // ✅ User joins and gets chat history
     socket.on('join', async ({ userId, token }) => {
         userSockets[userId] = socket.id;
+        console.log(`👤 User ${userId} joined.`);
+
+        // ✅ Fetch matched users and send them to the client
         const matchedUsers = await getMatchedUsers(token);
         socket.emit('matchedUsers', matchedUsers);
 
-        // ✅ Retrieve chat history
-        socket.on('getChatHistory', async ({ senderId, receiverId }) => {
-            const chatHistory = await Message.find({
-                $or: [
-                    { senderId: senderId, receiverId: receiverId },
-                    { senderId: receiverId, receiverId: senderId }
-                ]
-            }).sort({ timestamp: 1 });
+        // ✅ Fetch and send chat history
+        const chatHistory = await Message.find({
+            $or: [{ senderId: userId }, { receiverId: userId }]
+        }).sort({ timestamp: 1 });
 
-            socket.emit('chatHistory', chatHistory);
-        });
-
-        console.log(`👤 User ${userId} joined and retrieved matched users.`);
+        socket.emit('chatHistory', chatHistory);
     });
 
     // ✅ Start chat with a selected user
@@ -82,16 +77,18 @@ io.on('connection', (socket) => {
 
     // ✅ Handle messages and save to MongoDB
     socket.on('message', async ({ senderId, receiverId, message }) => {
+        // ✅ Save message in MongoDB
+        const newMessage = new Message({ senderId, receiverId, message });
+        await newMessage.save();
+
+        console.log(`💾 Message saved: ${senderId} -> ${receiverId}: ${message}`);
+
+        // ✅ Send message to both sender and receiver
         if (userSockets[receiverId]) {
             io.to(userSockets[receiverId]).emit('message', { senderId, message });
-
-            // ✅ Save message in MongoDB
-            const newMessage = new Message({ senderId, receiverId, message });
-            await newMessage.save();
-
-            console.log(`💾 Message saved: ${senderId} -> ${receiverId}: ${message}`);
-        } else {
-            console.log(`🚫 User ${receiverId} is not online`);
+        }
+        if (userSockets[senderId]) {
+            io.to(userSockets[senderId]).emit('message', { senderId, message });
         }
     });
 

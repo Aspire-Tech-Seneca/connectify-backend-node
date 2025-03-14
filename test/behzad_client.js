@@ -8,16 +8,32 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-socket.emit('join', { userId: 'behzad', token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQxOTc4MTk0LCJpYXQiOjE3NDE5Nzc4OTQsImp0aSI6IjYxYTVlMzhmOGY3ODRiYzE4MmExNTI0NzU5YjIyNDhjIiwidXNlcl9pZCI6MjV9.TxTz937y7XNW9s55DT8sbVmxAOIlHu9QA1Og7X4yk_k' });
+const senderId = 'behzad';
+const receiverId = 'hasan';
+
+// socket.emit('join', { userId: senderId, token: `${token}` });
+socket.emit('join', { userId: senderId, token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQxOTc4MTI0LCJpYXQiOjE3NDE5Nzc4OTQsImp0aSI6IjYxYTVlMzhmOGY3ODRiYzE4MmExNTI0NzU5YjIyNDhjIiwidXNlcl9pZCI6MjV9.TxTz937y7XNW9s55DT8sbVmxAOIlHu9QA1Og7X4yk_k' });
 
 socket.on('matchedUsers', (users) => {
     console.log('Matched users:', users);
-    socket.emit('startChat', { senderId: 'behzad', receiverId: 'hasan' });
+    socket.emit('startChat', { senderId, receiverId });
 });
 
 socket.on('chatStarted', (data) => {
-    console.log(`Chat started:`, data);
-    askMessage(); // Ask for new messages
+    console.log(`Chat started with ${receiverId}`);
+
+    // ✅ Request chat history
+    socket.emit('getChatHistory', { senderId, receiverId });
+});
+
+// ✅ Receive chat history and display it
+socket.on('chatHistory', (messages) => {
+    console.log('📜 Chat History:');
+    messages.forEach(msg => {
+        console.log(`${msg.senderId}: ${msg.message} (${new Date(msg.timestamp).toLocaleString()})`);
+    });
+
+    askMessage(); // Ask for new messages after showing history
 });
 
 socket.on('message', (data) => {
@@ -27,6 +43,6 @@ socket.on('message', (data) => {
 
 function askMessage() {
     rl.question('Type your message: ', (msg) => {
-        socket.emit('message', { senderId: 'behzad', receiverId: 'hasan', message: msg });
+        socket.emit('message', { senderId, receiverId, message: msg });
     });
 }
