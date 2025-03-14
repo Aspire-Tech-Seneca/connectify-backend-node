@@ -17,7 +17,8 @@ let userSockets = {}; // Map users to socket IDs
 async function getMatchedUsers(token) {
     try {
         const response = await axios.get(`${BASE_URL}/get-mymatchup-list/`, {
-            headers: { Authorization: `Bearer ${token}` }
+            // headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQxOTc1NDQ0LCJpYXQiOjE3NDE5NzUxNDQsImp0aSI6IjQyYmRmNWNhZmM1ZTQ0OTc4OTZmZWJiODhhMTUxNjM1IiwidXNlcl9pZCI6MjV9.My1QeQ-2YHDX0z9k7pgiHLySlHXADyBeOsbYtbzv_Nk` }
         });
         return response.data;
     } catch (error) {
