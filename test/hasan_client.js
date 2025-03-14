@@ -8,7 +8,7 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-socket.emit('join', { userId: 'hasan', token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQxOTc1NzAxLCJpYXQiOjE3NDE5NzU0MDEsImp0aSI6ImRlMDExOTk1YTAxMTRmNGZhMGI2MTgzNGE4MzA4ZTg0IiwidXNlcl9pZCI6Mjd9.aKWMH0JEbQp7Ey1uaBeS6MmYUPu6Khl7xXNaa9fHcR0' });
+socket.emit('join', { userId: 'hasan', token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQxOTc4MjI0LCJpYXQiOjE3NDE5Nzc5MjQsImp0aSI6ImZjZjRlNDI3ZmU4NTRlY2RhM2Q2YjJmZGQzNzcxNWI1IiwidXNlcl9pZCI6Mjd9.xUl1wF-5tClJ6DlEpy2x50fzrrlDZ16FLYLK6Odom-Y' });
 
 socket.on('message', (data) => {
     console.log(`${data.senderId}: ${data.message}`);

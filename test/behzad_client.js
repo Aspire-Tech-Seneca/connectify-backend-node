@@ -8,7 +8,7 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-socket.emit('join', { userId: 'behzad', token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQxOTc1NDQ0LCJpYXQiOjE3NDE5NzUxNDQsImp0aSI6IjQyYmRmNWNhZmM1ZTQ0OTc4OTZmZWJiODhhMTUxNjM1IiwidXNlcl9pZCI6MjV9.My1QeQ-2YHDX0z9k7pgiHLySlHXADyBeOsbYtbzv_Nk' });
+socket.emit('join', { userId: 'behzad', token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQxOTc4MTk0LCJpYXQiOjE3NDE5Nzc4OTQsImp0aSI6IjYxYTVlMzhmOGY3ODRiYzE4MmExNTI0NzU5YjIyNDhjIiwidXNlcl9pZCI6MjV9.TxTz937y7XNW9s55DT8sbVmxAOIlHu9QA1Og7X4yk_k' });
 
 socket.on('matchedUsers', (users) => {
     console.log('Matched users:', users);
