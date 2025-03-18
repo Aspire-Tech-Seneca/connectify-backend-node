@@ -1,19 +1,16 @@
 const express = require("express");
-const path = require("path");
 const http = require("http");
-const socketIo = require("socket.io");
 const cors = require("cors");
-
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
+const { Server } = require("socket.io");
+const path = require("path");
 
 const PORT = process.env.PORT || 3001;
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
+
+const app = express();
+app.use(cors());
+
+const server = http.createServer(app);
 
 // Serve the built React frontend
 app.use(express.static(path.join(__dirname, "public")));
@@ -22,22 +19,30 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Socket.IO logic
-io.on("connection", (socket) => {
-  console.log("New user connected");
+const io = new Server(server, {
+  cors: {
+    origin: CORS_ORIGIN,
+    methods: ["GET", "POST"],
+  },
+});
 
-  socket.on("joinRoom", ({ username, room }) => {
-    socket.join(room);
-    socket.to(room).emit("message", `${username} has joined the room`);
+io.on("connection", (socket) => {
+  console.log(`User Connected: ${socket.id}`);
+
+  socket.on("join_room", (data) => {
+    socket.join(data);
+    console.log(`User with ID: ${socket.id} joined room: ${data}`);
   });
 
-  socket.on("chatMessage", (data) => {
-    io.to(data.room).emit("message", `${data.username}: ${data.message}`);
+  socket.on("send_message", (data) => {
+    socket.to(data.room).emit("receive_message", data);
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    console.log(`User Disconnected: ${socket.id}`);
   });
 });
 
-server.listen(PORT, () => console.log(`SERVER RUNNING on port ${PORT}`));
+server.listen(PORT, () => {
+  console.log("SERVER RUNNING");
+});
