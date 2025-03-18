@@ -1,31 +1,39 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const [userId, setUserId] = useState("");
-  const [token, setToken] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    localStorage.setItem("userId", userId);
-    localStorage.setItem("token", token);
-    navigate("/chat");
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://localhost:8000/api/login/', {
+        username,
+        password,
+      });
+      localStorage.setItem('token', response.data.token);
+      navigate('/chat');
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   return (
-    <div className="login-container">
+    <div>
       <h2>Login</h2>
       <input
         type="text"
-        placeholder="User ID"
-        value={userId}
-        onChange={(e) => setUserId(e.target.value)}
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
       />
       <input
         type="password"
-        placeholder="Token"
-        value={token}
-        onChange={(e) => setToken(e.target.value)}
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
       />
       <button onClick={handleLogin}>Login</button>
     </div>
