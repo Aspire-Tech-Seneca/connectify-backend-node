@@ -2,9 +2,6 @@
 
 SocketGram is a real-time chat application that allows users to join rooms by providing their username and room name. The project leverages modern web technologies to deliver a smooth and responsive chat experience.
 
-## Preview
-
-<image src="login.png" alt="login preview" width="45%" /> <image src="chat.png" alt="chat preview" width="45%" />
 
 ## Features
 
